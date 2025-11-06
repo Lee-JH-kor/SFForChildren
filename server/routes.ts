@@ -8,7 +8,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve JSON data files
   app.get("/api/questions", async (req, res) => {
     try {
-      const questionsPath = path.resolve(import.meta.dirname, "..", "public", "questions_v1.json");
+      const questionsPath = path.resolve(import.meta.dirname, "..", "client", "public", "questions_v1.json");
       const questionsData = await fs.promises.readFile(questionsPath, "utf-8");
       res.json(JSON.parse(questionsData));
     } catch (error) {
@@ -18,7 +18,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/descriptions", async (req, res) => {
     try {
-      const descriptionsPath = path.resolve(import.meta.dirname, "..", "public", "descriptions_ko_v2.json");
+      const descriptionsPath = path.resolve(import.meta.dirname, "..", "client", "public", "descriptions_ko_v2.json");
       const descriptionsData = await fs.promises.readFile(descriptionsPath, "utf-8");
       res.json(JSON.parse(descriptionsData));
     } catch (error) {

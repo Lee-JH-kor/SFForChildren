@@ -20,11 +20,11 @@ export function useAssessment() {
   const [state, setState] = useState<AssessmentState>(initialState);
 
   const { data: questionsData } = useQuery<QuestionsData>({
-    queryKey: ["/api/questions"],
+    queryKey: [import.meta.env.MODE === 'production' ? "./questions_v1.json" : "/api/questions"],
   });
 
   const { data: descriptionsData } = useQuery<DescriptionsData>({
-    queryKey: ["/api/descriptions"],
+    queryKey: [import.meta.env.MODE === 'production' ? "./descriptions_ko_v2.json" : "/api/descriptions"],
   });
 
   useEffect(() => {
