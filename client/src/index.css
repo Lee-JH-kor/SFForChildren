@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pretendard Font Face */
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('./assets/fonts/Pretendard-Regular.woff2') format('woff2');
+}
+
+:root {
+  --radius: 12px;
+  
+  /* Light theme colors with pastel palette */
+  --background: hsl(210, 40%, 98%);
+  --foreground: hsl(222.2, 84%, 4.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(222.2, 84%, 4.9%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(222.2, 84%, 4.9%);
+  --primary: hsl(199, 89%, 81%); /* #B3E5FC */
+  --primary-foreground: hsl(210, 40%, 8%);
+  --secondary: hsl(29, 78%, 86%); /* #FFE0B2 */
+  --secondary-foreground: hsl(222.2, 84%, 4.9%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(215.4, 16.3%, 46.9%);
+  --accent: hsl(288, 44%, 84%); /* #E1BEE7 */
+  --accent-foreground: hsl(222.2, 84%, 4.9%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(214.3, 31.8%, 91.4%);
+  --input: hsl(214.3, 31.8%, 91.4%);
+  --ring: hsl(199, 89%, 81%);
+  --chart-1: hsl(199, 89%, 81%);
+  --chart-2: hsl(29, 78%, 86%);
+  --chart-3: hsl(288, 44%, 84%);
+  --chart-4: hsl(120, 60%, 85%); /* #C8E6C9 */
+  --chart-5: hsl(173, 58%, 80%);
+  
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+}
+
+.dark {
+  --background: hsl(222.2, 84%, 4.9%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(222.2, 84%, 4.9%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(222.2, 84%, 4.9%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(199, 89%, 81%);
+  --primary-foreground: hsl(210, 40%, 8%);
+  --secondary: hsl(217.2, 32.6%, 17.5%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --muted: hsl(217.2, 32.6%, 17.5%);
+  --muted-foreground: hsl(215, 20.2%, 65.1%);
+  --accent: hsl(217.2, 32.6%, 17.5%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217.2, 32.6%, 17.5%);
+  --input: hsl(217.2, 32.6%, 17.5%);
+  --ring: hsl(212.7, 26.8%, 83.9%);
+}
+
+/* Custom pastel color utilities */
+.custom-pastel-blue { 
+  background-color: #B3E5FC; 
+}
+
+.custom-pastel-peach { 
+  background-color: #FFE0B2; 
+}
+
+.custom-pastel-lavender { 
+  background-color: #E1BEE7; 
+}
+
+.custom-pastel-mint { 
+  background-color: #C8E6C9; 
+}
+
+/* Smooth transitions */
+.progress-fill {
+  transition: width 0.3s ease-in-out;
+}
+
+.scale-button {
+  transition: all 0.2s ease-in-out;
+  transform: scale(1);
+}
+
+.scale-button:hover {
+  transform: scale(1.05);
+}
+
+.scale-button:active {
+  transform: scale(0.95);
+}
+
+.scale-button.selected {
+  box-shadow: 0 0 0 3px hsl(199, 89%, 81%, 0.5);
+}
+
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Korean text optimization */
+.korean-text {
+  word-break: keep-all;
+  word-wrap: break-word;
+  line-height: 1.6;
+}
+
+/* Print styles for saving results */
+@media print {
+  /* Hide buttons and navigation elements when printing */
+  button, .no-print {
+    display: none !important;
+  }
+  
+  /* Optimize page breaks */
+  .result-card {
+    page-break-inside: avoid;
+  }
+  
+  /* Remove unnecessary margins */
+  body {
+    margin: 0;
+    padding: 20px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    word-break: keep-all;
+    word-wrap: break-word;
+  }
+}

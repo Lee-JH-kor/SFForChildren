@@ -1,0 +1,113 @@
+구현 팁(간단 코드 골격 예시 · React)
+// App.tsx (개략)
+import { useEffect, useState } from "react";
+
+type Phase1Q = { theme: string; ko: string };
+type Phase2Bank = Record<string, string[]>;
+type Scale = 0|1|2|3;
+
+export default function App(){
+  const [q1, setQ1] = useState<Phase1Q[]>([]);
+  const [q2bank, setQ2bank] = useState<Phase2Bank>({});
+  const [desc, setDesc] = useState<any>(null);
+
+  const [phase, setPhase] = useState<1|2|"done">(1);
+  const [idx, setIdx] = useState(0);
+  const [ans1, setAns1] = useState<Record<string, Scale>>({});
+  const [top10, setTop10] = useState<string[]>([]);
+  const [q2Queue, setQ2Queue] = useState<{theme:string; text:string}[]>([]);
+  const [ans2, setAns2] = useState<Record<string, Scale[]>>({});
+
+  const WEIGHT_PHASE2 = 1.5;
+  const CONSISTENCY_BONUS = true;
+
+  useEffect(()=>{
+    Promise.all([
+      fetch("/questions_v1.json").then(r=>r.json()),
+      fetch("/descriptions_ko_v2.json").then(r=>r.json())
+    ]).then(([qs, ds])=>{
+      setQ1(qs.phase1); setQ2bank(qs.phase2Bank); setDesc(ds);
+    });
+  },[]);
+
+  const total = 54;
+  const answered = (phase===1? idx : 34 + idx);
+  const progress = Math.round((Math.min(answered, total)/total)*100);
+
+  const answer = (score:Scale)=>{
+    if(phase===1){
+      const t = q1[idx].theme;
+      setAns1({...ans1, [t]:score});
+      if(idx+1<q1.length){ setIdx(idx+1); }
+      else {
+        // pick top10 (tie rule simplified)
+        const entries = Object.entries({...ans1, [t]:score});
+        entries.sort((a,b)=> (b[1]-a[1]));
+        const top = entries.slice(0,10).map(e=>e[0]);
+        setTop10(top);
+        // build phase2 queue
+        const q2 = top.flatMap(theme => q2bank[theme].map(text=>({theme, text})));
+        setQ2Queue(q2);
+        setPhase(2); setIdx(0);
+      }
+    } else if(phase===2){
+      const {theme} = q2Queue[idx];
+      const arr = ans2[theme] ?? [];
+      const next = {...ans2, [theme]: [...arr, score]};
+      setAns2(next);
+      if(idx+1<q2Queue.length){ setIdx(idx+1); }
+      else {
+        // scoring
+        const score1: Record<string, number> = ans1;
+        const score2: Record<string, number> = {};
+        top10.forEach(t=> score2[t] = (next[t]||[]).reduce((s,v)=>s+v,0));
+        const final: Record<string, number> = {};
+        top10.forEach(t=>{
+          let val = (score1[t]||0) + WEIGHT_PHASE2*(score2[t]||0);
+          if(CONSISTENCY_BONUS){
+            const c3 = (next[t]||[]).filter(v=>v===3).length;
+            val += Math.min(0.4, 0.2*c3);
+          }
+          final[t]=val;
+        });
+        // sort and top5
+        const top5 = Object.entries(final)
+          .sort((a,b)=> b[1]-a[1])
+          .slice(0,5)
+          .map(e=>e[0]);
+        // store somewhere or render directly...
+        (window as any).__top5 = top5;
+        setPhase("done");
+      }
+    }
+  };
+
+  if(!q1.length || !desc) return <div className="p-6">로딩중…</div>;
+
+  if(phase===1){
+    const q = q1[idx];
+    return (
+      <div className="p-6 max-w-xl mx-auto">
+        <Progress percent={progress}/>
+        <QuestionCard text={q.ko} onAnswer={answer}/>
+      </div>
+    );
+  }
+  if(phase===2){
+    const q = q2Queue[idx];
+    return (
+      <div className="p-6 max-w-xl mx-auto">
+        <Progress percent={progress}/>
+        <QuestionCard text={q.text} onAnswer={answer}/>
+      </div>
+    );
+  }
+  // done
+  const top5: string[] = (window as any).__top5 || [];
+  return (
+    <Results top5={top5} desc={desc}/>
+  );
+}
+
+
+위 코드는 흐름/점수 계산 구조를 보여주는 간단한 예시입니다(프로덕션용으론 상태·예외처리 보강 권장).
