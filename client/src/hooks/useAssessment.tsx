@@ -19,12 +19,21 @@ const initialState: AssessmentState = {
 export function useAssessment() {
   const [state, setState] = useState<AssessmentState>(initialState);
 
+  // In production, load JSON files directly; in development, use API
+  const questionsUrl = typeof window !== 'undefined' && window.location.protocol === 'file:' 
+    ? './questions_v1.json'
+    : (import.meta.env.MODE === 'production' ? './questions_v1.json' : '/api/questions');
+  
+  const descriptionsUrl = typeof window !== 'undefined' && window.location.protocol === 'file:' 
+    ? './descriptions_ko_v2.json'
+    : (import.meta.env.MODE === 'production' ? './descriptions_ko_v2.json' : '/api/descriptions');
+
   const { data: questionsData } = useQuery<QuestionsData>({
-    queryKey: [import.meta.env.MODE === 'production' ? "./questions_v1.json" : "/api/questions"],
+    queryKey: [questionsUrl],
   });
 
   const { data: descriptionsData } = useQuery<DescriptionsData>({
-    queryKey: [import.meta.env.MODE === 'production' ? "./descriptions_ko_v2.json" : "/api/descriptions"],
+    queryKey: [descriptionsUrl],
   });
 
   useEffect(() => {
